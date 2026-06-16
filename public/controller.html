@@ -6,115 +6,235 @@
   <title>Manette</title>
   <style>
     :root {
-      --bg: #0a0f0d;
-      --ink: #eafff4;
-      --pass: #4ade80;
-      --shoot: #ffd23f;
-      --tackle: #f87171;
+      --bg:      #0a0f0d;
+      --ink:     #eafff4;
+      --dim:     rgba(234,255,244,0.5);
+      --team-a:  #38bdf8;
+      --team-b:  #fb7237;
+      --amber:   #ffd23f;
+      --pass:    #4ade80;
+      --shoot:   #ffd23f;
+      --tackle:  #f87171;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-user-select: none; user-select: none;
+      -webkit-tap-highlight-color: transparent; }
     html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--ink);
+      height: 100%; background: var(--bg); color: var(--ink);
       font-family: "Arial Narrow", system-ui, sans-serif;
-      overflow: hidden;
-      touch-action: none;
-      overscroll-behavior: none;
+      overflow: hidden; touch-action: none; overscroll-behavior: none;
     }
 
-    /* Demande de mise en paysage */
+    /* Portrait warning */
     .rotate {
-      display: none;
-      position: fixed; inset: 0; z-index: 50;
-      background: var(--bg);
-      align-items: center; justify-content: center; flex-direction: column; gap: 14px;
-      text-align: center; padding: 30px;
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: var(--bg); align-items: center; justify-content: center;
+      flex-direction: column; gap: 14px; text-align: center; padding: 30px;
     }
-    .rotate span { font-size: 18px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(234,255,244,0.7); }
+    .rotate span { font-size: 18px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
     @media (orientation: portrait) {
       .rotate { display: flex; }
-      .pad { display: none; }
     }
 
-    /* Bandeau d'état */
+    /* Écrans */
+    .ctrl-screen {
+      position: fixed; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ctrl-screen.hidden { display: none; }
+
+    /* ── WAITING ── */
+    #ctrl-waiting { flex-direction: column; gap: 16px; }
+    .wait-title { font-size: 22px; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; text-align: center; }
+    .wait-sub { color: var(--dim); font-size: 14px; letter-spacing: .08em;
+      text-align: center; }
+
+    /* ── MENU LEADER ── */
+    #ctrl-menu-leader {
+      display: grid;
+      grid-template-rows: 1fr auto 1fr;
+      grid-template-columns: 1fr;
+      width: 100%; height: 100%;
+    }
+    #ctrl-menu-leader.hidden { display: none; }
+    .nav-btn {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 42px; font-weight: 700; letter-spacing: .05em;
+      background: rgba(255,255,255,.04);
+      border: none; color: var(--ink); cursor: pointer;
+      transition: background .1s;
+    }
+    .nav-btn:active { background: rgba(255,255,255,.12); }
+    .nav-btn.up   { border-bottom: 1px solid rgba(255,255,255,.08); }
+    .nav-btn.down { border-top:    1px solid rgba(255,255,255,.08); }
+    .nav-middle {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      padding: 10px 20px; background: #06100c;
+    }
+    .game-name { font-size: 20px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--amber); text-align: center; }
+    .nav-validate {
+      background: var(--amber); color: #06100c; border: none;
+      border-radius: 12px; padding: 14px 32px;
+      font-size: 18px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      cursor: pointer; transition: opacity .1s;
+    }
+    .nav-validate:active { opacity: .75; }
+
+    /* ── MENU FOLLOWER ── */
+    #ctrl-menu-follower { flex-direction: column; gap: 12px; }
+    .follower-label { font-size: 16px; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--dim); text-align: center; padding: 0 30px; }
+    .follower-name { font-size: 26px; font-weight: 700; color: var(--amber); text-align: center; }
+
+    /* ── TEAM SELECT ── */
+    #ctrl-team {
+      display: grid; grid-template-columns: 1fr 1fr;
+      width: 100%; height: 100%;
+    }
+    #ctrl-team.hidden { display: none; }
+    .team-btn {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      border: none; cursor: pointer; font-weight: 700;
+      transition: background .1s;
+    }
+    .team-btn.btn-a {
+      background: rgba(56,189,248,.08); border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .team-btn.btn-b { background: rgba(251,114,55,.08); }
+    .team-btn.btn-a:active { background: rgba(56,189,248,.22); }
+    .team-btn.btn-b:active { background: rgba(251,114,55,.22); }
+    .team-btn.chosen-a { background: rgba(56,189,248,.28) !important; }
+    .team-btn.chosen-b { background: rgba(251,114,55,.28) !important; }
+    .team-btn-label { font-size: 28px; letter-spacing: .14em; text-transform: uppercase; }
+    .team-btn.btn-a .team-btn-label { color: var(--team-a); }
+    .team-btn.btn-b .team-btn-label { color: var(--team-b); }
+    .team-check { font-size: 36px; }
+
+    /* Countdown overlay (sur team select) */
+    #ctrl-cd {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 14px 24px;
+      background: rgba(4,10,7,.85); backdrop-filter: blur(4px);
+      display: flex; align-items: center; gap: 16px;
+    }
+    #ctrl-cd.hidden { display: none; }
+    #ctrl-cd-num { font-size: 26px; font-weight: 700; color: #4ade80; min-width: 28px; text-align: center; }
+    #ctrl-cd-track { flex: 1; height: 8px; background: rgba(255,255,255,.12); border-radius: 99px; overflow: hidden; }
+    #ctrl-cd-fill  { height: 100%; width: 100%; background: #4ade80; border-radius: 99px; }
+    #ctrl-cd-label { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+
+    /* ── GAME ── */
+    #ctrl-game { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 100%; }
+    #ctrl-game.hidden { display: none; }
+    .stick-zone { position: relative; }
+    .stick-base {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(255,255,255,.05); border: 2px solid rgba(255,255,255,.12);
+    }
+    .stick-thumb {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 78px; height: 78px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #eafff4, #7fb8a6);
+      box-shadow: 0 6px 18px rgba(0,0,0,.5); pointer-events: none;
+    }
+    .btn-zone {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 18px; padding: 30px;
+    }
+    .btn-row { display: flex; gap: 18px; }
+    .action-btn {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 3px solid; background: rgba(255,255,255,.04);
+      font-weight: 700; font-size: 15px; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--ink); display: flex; align-items: center; justify-content: center;
+      transition: transform .05s, background .05s;
+    }
+    .action-btn:active { background: rgba(255,255,255,.10); transform: scale(.92); }
+    .action-btn.pass   { border-color: var(--pass);   color: var(--pass); }
+    .action-btn.shoot  { border-color: var(--shoot);  color: var(--shoot); width: 120px; height: 120px; font-size: 17px; }
+    .action-btn.tackle { border-color: var(--tackle); color: var(--tackle); }
+
+    /* Topbar */
     .topbar {
       position: fixed; top: 0; left: 0; right: 0;
       display: flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 10px; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
-      color: rgba(234,255,244,0.6); z-index: 5;
+      padding: 10px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--dim); z-index: 5; pointer-events: none;
     }
     .badge { width: 12px; height: 12px; border-radius: 50%; background: #555; }
-    .badge.a { background: #38bdf8; }
-    .badge.b { background: #fb7237; }
-
-    /* Zone manette */
-    .pad {
-      position: fixed; inset: 0;
-      display: grid; grid-template-columns: 1fr 1fr;
-    }
-
-    /* Joystick (gauche) */
-    .stick-zone { position: relative; }
-    .stick-base {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 180px; height: 180px; border-radius: 50%;
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.12);
-    }
-    .stick-thumb {
-      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 78px; height: 78px; border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #eafff4, #7fb8a6);
-      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-      pointer-events: none;
-    }
-
-    /* Boutons d'action (droite) */
-    .btn-zone {
-      position: relative;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-      padding: 30px;
-    }
-    .row { display: flex; gap: 18px; }
-    .btn {
-      width: 96px; height: 96px; border-radius: 50%;
-      border: 3px solid; background: rgba(255,255,255,0.04);
-      font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--ink);
-      display: flex; align-items: center; justify-content: center;
-      transition: transform .05s, background .05s;
-    }
-    .btn:active { transform: scale(0.92); }
-    .btn.pass   { border-color: var(--pass);   color: var(--pass); }
-    .btn.shoot  { border-color: var(--shoot);  color: var(--shoot); width: 120px; height: 120px; font-size: 17px; }
-    .btn.tackle { border-color: var(--tackle); color: var(--tackle); }
-    .btn:active { background: rgba(255,255,255,0.10); }
+    .badge.a { background: var(--team-a); }
+    .badge.b { background: var(--team-b); }
   </style>
 </head>
 <body>
-  <div class="rotate"><span>Tourne ton téléphone</span><span style="font-size:34px">⟳</span></div>
 
-  <div class="topbar">
-    <span class="badge" id="badge"></span>
-    <span id="status">Connexion…</span>
+<div class="rotate"><span>Tourne ton téléphone</span><span style="font-size:34px">⟳</span></div>
+
+<div class="topbar">
+  <span class="badge" id="badge"></span>
+  <span id="topbar-status">Connexion…</span>
+</div>
+
+<!-- WAITING -->
+<div id="ctrl-waiting" class="ctrl-screen">
+  <div class="wait-title">En attente…</div>
+  <div class="wait-sub">Connexion au serveur</div>
+</div>
+
+<!-- MENU LEADER (premier joueur) -->
+<div id="ctrl-menu-leader" class="ctrl-screen hidden">
+  <button class="nav-btn up" id="btn-up">↑</button>
+  <div class="nav-middle">
+    <div class="game-name" id="leader-game-name">—</div>
+    <button class="nav-validate" id="btn-validate">Jouer</button>
   </div>
+  <button class="nav-btn down" id="btn-down">↓</button>
+</div>
 
-  <div class="pad">
-    <div class="stick-zone" id="stickZone">
-      <div class="stick-base" id="stickBase"></div>
-      <div class="stick-thumb" id="stickThumb"></div>
-    </div>
-    <div class="btn-zone">
-      <div class="row">
-        <button class="btn pass" id="btnPass">Passe</button>
-        <button class="btn tackle" id="btnTackle">Tacle</button>
-      </div>
-      <button class="btn shoot" id="btnShoot">Tir</button>
-    </div>
+<!-- MENU FOLLOWER (autres joueurs) -->
+<div id="ctrl-menu-follower" class="ctrl-screen hidden">
+  <div class="follower-label">Choisit le jeu :</div>
+  <div class="follower-name" id="follower-leader-name">—</div>
+</div>
+
+<!-- TEAM SELECT -->
+<div id="ctrl-team" class="ctrl-screen hidden">
+  <button class="team-btn btn-a" id="btn-team-a">
+    <div class="team-btn-label">Azur</div>
+    <div class="team-check" id="check-a"></div>
+  </button>
+  <button class="team-btn btn-b" id="btn-team-b">
+    <div class="team-btn-label">Mandarine</div>
+    <div class="team-check" id="check-b"></div>
+  </button>
+  <div id="ctrl-cd" class="hidden">
+    <div id="ctrl-cd-num">5</div>
+    <div id="ctrl-cd-track"><div id="ctrl-cd-fill"></div></div>
+    <div id="ctrl-cd-label">Lancement…</div>
   </div>
+</div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/controller.js"></script>
+<!-- GAME -->
+<div id="ctrl-game" class="ctrl-screen hidden">
+  <div class="stick-zone" id="stickZone">
+    <div class="stick-base" id="stickBase"></div>
+    <div class="stick-thumb" id="stickThumb"></div>
+  </div>
+  <div class="btn-zone">
+    <div class="btn-row">
+      <button class="action-btn pass"   id="btnPass">Passe</button>
+      <button class="action-btn tackle" id="btnTackle">Tacle</button>
+    </div>
+    <button class="action-btn shoot" id="btnShoot">Tir</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/controller.js"></script>
 </body>
 </html>
