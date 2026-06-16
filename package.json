@@ -1,0 +1,16 @@
+{
+  "name": "foot-manette",
+  "version": "1.0.0",
+  "description": "Jeu de foot vu de haut : le jeu sur l'ordi, la manette sur le téléphone (WiFi).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "school": "TUNNEL=1 node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "localtunnel": "^2.0.2",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.7.5"
+  }
+}

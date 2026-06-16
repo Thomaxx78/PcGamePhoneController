@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Manette</title>
+  <style>
+    :root {
+      --bg: #0a0f0d;
+      --ink: #eafff4;
+      --pass: #4ade80;
+      --shoot: #ffd23f;
+      --tackle: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "Arial Narrow", system-ui, sans-serif;
+      overflow: hidden;
+      touch-action: none;
+      overscroll-behavior: none;
+    }
+
+    /* Demande de mise en paysage */
+    .rotate {
+      display: none;
+      position: fixed; inset: 0; z-index: 50;
+      background: var(--bg);
+      align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+      text-align: center; padding: 30px;
+    }
+    .rotate span { font-size: 18px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(234,255,244,0.7); }
+    @media (orientation: portrait) {
+      .rotate { display: flex; }
+      .pad { display: none; }
+    }
+
+    /* Bandeau d'état */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 10px; font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+      color: rgba(234,255,244,0.6); z-index: 5;
+    }
+    .badge { width: 12px; height: 12px; border-radius: 50%; background: #555; }
+    .badge.a { background: #38bdf8; }
+    .badge.b { background: #fb7237; }
+
+    /* Zone manette */
+    .pad {
+      position: fixed; inset: 0;
+      display: grid; grid-template-columns: 1fr 1fr;
+    }
+
+    /* Joystick (gauche) */
+    .stick-zone { position: relative; }
+    .stick-base {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 180px; height: 180px; border-radius: 50%;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.12);
+    }
+    .stick-thumb {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 78px; height: 78px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #eafff4, #7fb8a6);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+      pointer-events: none;
+    }
+
+    /* Boutons d'action (droite) */
+    .btn-zone {
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+      padding: 30px;
+    }
+    .row { display: flex; gap: 18px; }
+    .btn {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 3px solid; background: rgba(255,255,255,0.04);
+      font-weight: 700; font-size: 15px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .05s, background .05s;
+    }
+    .btn:active { transform: scale(0.92); }
+    .btn.pass   { border-color: var(--pass);   color: var(--pass); }
+    .btn.shoot  { border-color: var(--shoot);  color: var(--shoot); width: 120px; height: 120px; font-size: 17px; }
+    .btn.tackle { border-color: var(--tackle); color: var(--tackle); }
+    .btn:active { background: rgba(255,255,255,0.10); }
+  </style>
+</head>
+<body>
+  <div class="rotate"><span>Tourne ton téléphone</span><span style="font-size:34px">⟳</span></div>
+
+  <div class="topbar">
+    <span class="badge" id="badge"></span>
+    <span id="status">Connexion…</span>
+  </div>
+
+  <div class="pad">
+    <div class="stick-zone" id="stickZone">
+      <div class="stick-base" id="stickBase"></div>
+      <div class="stick-thumb" id="stickThumb"></div>
+    </div>
+    <div class="btn-zone">
+      <div class="row">
+        <button class="btn pass" id="btnPass">Passe</button>
+        <button class="btn tackle" id="btnTackle">Tacle</button>
+      </div>
+      <button class="btn shoot" id="btnShoot">Tir</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/controller.js"></script>
+</body>
+</html>
